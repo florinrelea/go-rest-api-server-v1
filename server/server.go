@@ -89,10 +89,21 @@ func (a *ServerApp) createProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, newProduct)
+	respondWithJSON(w, http.StatusCreated, newProduct)
 }
 
-func (a *ServerApp) InitRoutes() {
+func (a *ServerApp) Init(port string) {
+	rtr := mux.NewRouter()
+	DB, err := sql.Open("sqlite3", "./practice.db")
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	a.Router = rtr
+	a.DB = DB
+	a.Port = port
+
 	a.Router.HandleFunc("/products", a.getAllProducts).Methods("GET")
 	a.Router.HandleFunc("/products/{id}", a.getProduct).Methods("GET")
 	a.Router.HandleFunc("/products", a.createProduct).Methods("POST")
